@@ -1,0 +1,124 @@
+{
+  "profile": {
+    "project_name": "Callpath",
+    "tagline": "Real-time decoded call trace API for every Base transaction — no ABI hunting, no raw hex.",
+    "full_description": "Callpath provides a REST and WebSocket API that accepts any Base transaction hash, block range, or contract address and returns fully decoded call traces with human-readable function names, typed arguments, internal calls, emitted events, and revert reasons. The API is backed by a live ABI registry that auto-indexes verified contracts from Basescan and accepts community-submitted ERC-7730-compatible JSON metadata stored on IPFS. For unverified contracts, Callpath runs a bytecode fingerprint matcher against a 4-byte selector database to apply known ERC patterns and returns partial decoding with per-field confidence scores. ERC-4337 UserOp bundles are unpacked into individual decoded operations with per-op gas accounting and revert attribution. This gives portfolio trackers, AI agent observability layers, and wallet UX teams structured transaction semantics without operating their own archival node and decoder stack.",
+    "category": "apis-data",
+    "stage": "prototype",
+    "chain": "base",
+    "tech_stack": [
+      "Node.js",
+      "Fastify",
+      "Base RPC (debug_traceTransaction, eth_getLogs)",
+      "Redis Streams",
+      "WebSocket (ws library)",
+      "ERC-7730 JSON metadata standard",
+      "4-byte selector database",
+      "ERC-4337 UserOp ABI decoder",
+      "Basescan API (verified ABI indexer)",
+      "IPFS (community ABI submissions)",
+      "PostgreSQL (ABI registry persistence)",
+      "Docker / Fly.io"
+    ],
+    "ai_tools": [
+      "Cursor",
+      "Claude Code",
+      "GitHub Copilot"
+    ],
+    "team_description": "The founding team has backgrounds in EVM tooling and backend infrastructure, with prior experience building indexing pipelines for on-chain analytics platforms and contributing to open-source ABI decoding libraries. They have shipped production-grade RPC middleware used by wallet teams on Ethereum mainnet.",
+    "roadmap": [
+      {
+        "quarter": "Q1 2026",
+        "status": "completed",
+        "goal": "Ship a working prototype that decodes verified-contract transactions on Base via REST endpoint.",
+        "deliverables": [
+          "POST /trace endpoint accepting a Base tx hash and returning a typed call tree for Basescan-verified contracts",
+          "Basescan ABI indexer that polls verified contracts every block and persists ABIs to PostgreSQL",
+          "Internal testbed covering 10 high-volume Base protocols (Uniswap v3, Aerodrome, Base Bridge) with assertion-based decode accuracy checks"
+        ]
+      },
+      {
+        "quarter": "Q2 2026",
+        "status": "in_progress",
+        "goal": "Add bytecode fingerprint decoding, ERC-4337 UserOp unpacking, and WebSocket streaming for public developer access.",
+        "deliverables": [
+          "Bytecode fingerprint matcher integrated with 4-byte selector DB, returning per-field confidence scores for unverified contracts",
+          "ERC-4337 UserOp bundle decoder that explodes bundled operations into individual decoded calls with per-op gas and revert attribution",
+          "WebSocket subscription endpoint allowing developers to stream decoded call events for any contract address in real time"
+        ]
+      },
+      {
+        "quarter": "Q3 2026",
+        "status": "upcoming",
+        "goal": "Launch public API with metered pricing, community ABI submission pipeline, and ERC-7730 on-chain metadata support.",
+        "deliverables": [
+          "Public API portal with API key issuance, usage dashboards, and tiered rate limits (free / pro / enterprise)",
+          "Community ABI submission flow accepting ERC-7730-compatible JSON metadata pinned to IPFS and indexed within one block confirmation",
+          "Block-range batch endpoint (GET /traces?from=&to=) enabling historical analytics queries across up to 1000 blocks per request"
+        ]
+      }
+    ],
+    "links": {
+      "website": "",
+      "github": "",
+      "telegram": ""
+    },
+    "logo_path": "/Users/aliev_murat/Documents/Claude/Projects/SURGE/startup-generator/output/projects/Callpath/logo.svg",
+    "pitch_deck_path": "/Users/aliev_murat/Documents/Claude/Projects/SURGE/startup-generator/output/projects/Callpath/pitch_deck.pptx",
+    "pitch_video_url": ""
+  },
+  "metadata": {
+    "generated_at": "2026-04-14T16:56:47.848171",
+    "source": "startup_generator",
+    "founder": "Founded by AI",
+    "original_idea": {
+      "project_name": "Callpath",
+      "tagline": "Real-time decoded API for every Base contract interaction — no ABI hunting, no raw hex.",
+      "category": "apis-data",
+      "stage": "prototype",
+      "chain": "base",
+      "problem": "In 2026, Base processes over 5M transactions daily across hundreds of deployed protocols, but developers building on top of Base — dashboards, analytics tools, AI agents, wallets — still have to manually source ABIs, decode calldata, and stitch together trace trees from raw RPC responses. There is no unified, maintained API that returns human-readable, structured call traces for any Base transaction or block in real time.",
+      "solution": "Callpath exposes a single REST and WebSocket API that accepts any Base transaction hash, block range, or contract address and returns fully decoded call traces — function names, typed arguments, internal calls, emitted events, and revert reasons — resolved against a live ABI registry that auto-indexes verified contracts from Basescan and community-submitted ABIs stored as ERC-7730-compatible JSON metadata on-chain. For unverified contracts, Callpath uses a bytecode fingerprint matcher to apply known proxy and ERC patterns (ERC-20, ERC-721, ERC-4337 UserOp bundles) and returns best-effort partial decoding with confidence scores.",
+      "target_user": "Developers building Base-native products — portfolio trackers, AI agent observability layers, on-chain analytics dashboards, and wallet UX teams — who need structured, real-time transaction semantics without running their own archival node and decoder stack.",
+      "unique_insight": "The real bottleneck for Base ecosystem tooling is not compute or storage — it is the absence of a maintained, queryable semantic layer that turns raw EVM execution into structured data that application code can actually consume.",
+      "tech_stack": [
+        "Base RPC / debug_traceTransaction",
+        "ERC-7730 JSON metadata standard",
+        "Basescan verified ABI indexer",
+        "Bytecode fingerprint matching (4-byte selector DB)",
+        "ERC-4337 UserOp bundle decoder",
+        "Node.js / Fastify API layer",
+        "Redis streams for WebSocket delivery",
+        "IPFS for community ABI submissions"
+      ],
+      "core_features": [
+        "Single-endpoint decoded trace API: POST a tx hash, receive a fully typed call tree with human-readable function names, argument values, and child calls",
+        "Live ABI registry auto-synced from Basescan verified contracts and community ERC-7730 submissions, updated every block",
+        "Bytecode fingerprint decoder for unverified contracts — matches known selectors and ERC patterns with per-field confidence scoring",
+        "ERC-4337 UserOp unpacking: explode bundled userOps into individual decoded operations with per-op gas and revert attribution",
+        "WebSocket stream subscription: subscribe to any contract address and receive decoded call events in real time as blocks land"
+      ],
+      "why_now": "Base crossed 5M daily transactions in early 2026 and is now the primary deployment target for AI agent wallets and ERC-4337 smart accounts — both of which generate deeply nested, hard-to-decode call trees that existing block explorers and raw RPC endpoints cannot serve at API scale. The tooling gap is actively blocking a generation of Base-native product teams."
+    },
+    "design_dna": {
+      "heading_font": "Playfair Display",
+      "body_font": "Source Sans 3",
+      "palette_name": "void_cyan",
+      "palette": {
+        "name": "void_cyan",
+        "bg": "#050505",
+        "surface": "#0A0A0A",
+        "accent": "#06B6D4",
+        "accent2": "#22D3EE",
+        "text": "#E0FCFF",
+        "dim": "#4A7A7A",
+        "mode": "dark"
+      },
+      "layout": "asymmetric",
+      "mood": "neumorphic",
+      "animation": "float",
+      "corner_radius": "12px"
+    },
+    "logo_style": "wordmark"
+  }
+}

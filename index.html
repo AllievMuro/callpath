@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Callpath — Decoded Call Trace API for Base</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Sans+3:wght@300;400;600&family=JetBrains+Mono:wght@400;600&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#050505;--surf:#0A0A0A;--acc:#06B6D4;--acc2:#22D3EE;--txt:#E0FCFF;--muted:#4A7A7A;--r:12px}
+body{background:var(--bg);color:var(--txt);font-family:'Source Sans 3',sans-serif;overflow-x:hidden}
+h1,h2,h3{font-family:'Playfair Display',serif}
+a{color:var(--acc);text-decoration:none}
+.mono{font-family:'JetBrains Mono',monospace}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes floatB{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes pulse{0%,100%{opacity:.7}50%{opacity:1}}
+.card{background:var(--surf);border:1px solid #0f2a2e;border-radius:var(--r);box-shadow:4px 4px 12px #000,inset 0 1px 0 #0e3040,-2px -2px 8px #071820}
+nav{display:flex;align-items:center;justify-content:space-between;padding:1rem 2.5rem;position:sticky;top:0;z-index:99;background:rgba(5,5,5,.92);backdrop-filter:blur(12px);border-bottom:1px solid #0f2a2e}
+.nav-logo{display:flex;align-items:center;gap:.6rem;font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--txt)}
+.nav-logo svg{width:32px;height:32px;border-radius:6px}
+nav ul{list-style:none;display:flex;gap:2rem}
+nav ul a{color:var(--muted);font-size:.9rem;transition:color .2s}
+nav ul a:hover{color:var(--acc2)}
+.btn{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#050505;font-weight:700;padding:.55rem 1.4rem;border-radius:var(--r);font-size:.9rem;border:none;cursor:pointer;box-shadow:0 0 16px rgba(6,182,212,.3);transition:box-shadow .2s}
+.btn:hover{box-shadow:0 0 28px rgba(6,182,212,.6)}
+/* HERO */
+.hero{min-height:90vh;display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:3rem;padding:5rem 2.5rem 3rem;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 60% at 75% 40%,rgba(6,182,212,.07) 0%,transparent 70%);pointer-events:none}
+.hero-tag{display:inline-block;background:rgba(6,182,212,.1);border:1px solid rgba(6,182,212,.25);border-radius:20px;padding:.3rem .9rem;font-size:.78rem;color:var(--acc);margin-bottom:1.2rem;font-family:'JetBrains Mono',monospace}
+.hero h1{font-size:clamp(2.2rem,4.5vw,3.6rem);line-height:1.12;margin-bottom:1.2rem;background:linear-gradient(135deg,var(--txt) 40%,var(--acc2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{color:var(--muted);font-size:1.05rem;line-height:1.7;margin-bottom:2rem;max-width:480px}
+.hero-btns{display:flex;gap:1rem;flex-wrap:wrap}
+.btn-ghost{border:1px solid var(--acc);color:var(--acc);background:transparent;padding:.55rem 1.4rem;border-radius:var(--r);font-size:.9rem;cursor:pointer;transition:background .2s}
+.btn-ghost:hover{background:rgba(6,182,212,.1)}
+.hero-visual{animation:float 5s ease-in-out infinite;position:relative}
+.code-card{padding:1.5rem;border-radius:var(--r);background:#070f12;border:1px solid #0f2a2e;box-shadow:6px 6px 20px #000,inset 0 1px 0 #0e3040;font-family:'JetBrains Mono',monospace;font-size:.72rem;line-height:1.7;overflow:hidden}
+.code-card .ln{color:var(--muted)}.c-key{color:var(--acc2)}.c-str{color:#a8ff78}.c-num{color:#ffd97d}.c-obj{color:var(--txt)}
+.float-badge{position:absolute;top:-1rem;right:-1rem;background:linear-gradient(135deg,var(--acc),var(--acc2));color:#050505;border-radius:8px;padding:.3rem .7rem;font-size:.7rem;font-weight:700;font-family:'JetBrains Mono',monospace;animation:floatB 3.5s ease-in-out infinite}
+/* PROBLEM */
+.problem{padding:5rem 2.5rem;display:grid;grid-template-columns:2fr 3fr;gap:4rem;align-items:center}
+.section-label{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--acc);letter-spacing:2px;text-transform:uppercase;margin-bottom:.8rem}
+.pain-list{list-style:none;margin-top:1.5rem}
+.pain-list li{padding:.7rem 0;border-bottom:1px solid #0f1a1e;color:var(--muted);display:flex;gap:.8rem;align-items:flex-start;font-size:.95rem}
+.pain-list li::before{content:'✗';color:#e05555;flex-shrink:0;margin-top:.05rem}
+.hex-block{padding:1.2rem;border-radius:var(--r);background:#070f12;border:1px solid #1a1a1a;font-family:'JetBrains Mono',monospace;font-size:.68rem;color:#2a4a4e;word-break:break-all;line-height:1.6;animation:pulse 4s ease-in-out infinite}
+.hex-block span{color:var(--muted)}
+/* FEATURES */
+.features{padding:5rem 2.5rem;text-align:center}
+.features h2{font-size:2.2rem;margin-bottom:.6rem}
+.features>p{color:var(--muted);max-width:540px;margin:0 auto 3rem}
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;text-align:left}
+.feat-card{padding:1.6rem;border-radius:var(--r);animation:floatB 4s ease-in-out infinite}
+.feat-card:nth-child(2){animation-delay:.8s}.feat-card:nth-child(3){animation-delay:1.6s}.feat-card:nth-child(4){animation-delay:.4s}.feat-card:nth-child(5){animation-delay:1.2s}.feat-card:nth-child(6){animation-delay:2s}
+.feat-icon{width:40px;height:40px;border-radius:10px;background:rgba(6,182,212,.1);border:1px solid rgba(6,182,212,.2);display:flex;align-items:center;justify-content:center;font-size:1.1rem;margin-bottom:1rem}
+.feat-card h3{font-size:1rem;margin-bottom:.4rem}
+.feat-card p{color:var(--muted);font-size:.88rem;line-height:1.6}
+/* HOW IT WORKS */
+.how{padding:5rem 2.5rem;display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start}
+.steps{display:flex;flex-direction:column;gap:1.5rem;margin-top:1.5rem}
+.step{display:flex;gap:1.2rem;align-items:flex-start}
+.step-num{width:32px;height:32px;border-radius:50%;background:rgba(6,182,212,.15);border:1px solid var(--acc);display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--acc);flex-shrink:0}
+.step h3{font-family:'Source Sans 3',sans-serif;font-size:.95rem;font-weight:600;margin-bottom:.25rem}
+.step p{color:var(--muted);font-size:.88rem;line-height:1.6}
+.api-demo{animation:float 6s ease-in-out infinite}
+.endpoint-pill{display:inline-flex;align-items:center;gap:.5rem;background:rgba(6,182,212,.08);border:1px solid rgba(6,182,212,.2);border-radius:8px;padding:.4rem .9rem;font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--acc2);margin-bottom:.8rem}
+.method{background:var(--acc);color:#050505;border-radius:4px;padding:.1rem .4rem;font-size:.65rem;font-weight:700}
+/* ROADMAP */
+.roadmap{padding:5rem 2.5rem}
+.roadmap h2{font-size:2.2rem;margin-bottom:.5rem;text-align:center}
+.roadmap>p{color:var(--muted);text-align:center;margin-bottom:3rem}
+.timeline{position:relative;max-width:700px;margin:0 auto;padding-left:2rem}
+.timeline::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,var(--acc),transparent)}
+.tl-item{position:relative;padding:0 0 2.5rem 2rem}
+.tl-dot{position:absolute;left:-2.45rem;top:.3rem;width:12px;height:12px;border-radius:50%;border:2px solid var(--acc);background:var(--bg)}
+.tl-dot.done{background:var(--acc)}
+.tl-dot.active{background:var(--acc);box-shadow:0 0 12px var(--acc);animation:pulse 2s infinite}
+.tl-q{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--acc);margin-bottom:.3rem}
+.tl-item h3{font-size:1rem;margin-bottom:.4rem}
+.tl-item p{color:var(--muted);font-size:.88rem;line-height:1.6}
+.badge-done,.badge-prog,.badge-up{font-size:.65rem;padding:.15rem .5rem;border-radius:4px;font-family:'JetBrains Mono',monospace;font-weight:600;margin-left:.5rem}
+.badge-done{background:rgba(6,182,212,.2);color:var(--acc2)}
+.badge-prog{background:rgba(255,200,0,.15);color:#ffd97d}
+.badge-up{background:rgba(74,122,122,.15);color:var(--muted)}
+/* CTA */
+.cta{padding:6rem 2.5rem;text-align:center;position:relative;overflow:hidden}
+.cta::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 50% 70% at 50% 50%,rgba(6,182,212,.06) 0%,transparent 70%);pointer-events:none}
+.cta h2{font-size:2.6rem;margin-bottom:1rem}
+.cta p{color:var(--muted);max-width:500px;margin:0 auto 2.5rem;font-size:1.05rem;line-height:1.7}
+.cta-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+footer{padding:2rem 2.5rem;border-top:1px solid #0f1a1e;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+footer p{color:var(--muted);font-size:.85rem}
+footer .links{display:flex;gap:1.5rem}
+footer .links a{color:var(--muted);font-size:.85rem;transition:color .2s}
+footer .links a:hover{color:var(--acc)}
+@media(max-width:768px){
+  .hero,.problem,.how{grid-template-columns:1fr}
+  .feat-grid{grid-template-columns:1fr 1fr}
+  nav ul{display:none}
+  .hero-visual{order:-1}
+}
+@media(max-width:480px){.feat-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">
+    <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="cp-text-grad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#E0FCFF"/><stop offset="60%" stop-color="#06B6D4"/><stop offset="100%" stop-color="#22D3EE"/></linearGradient><linearGradient id="cp-accent-grad" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#06B6D4"/><stop offset="100%" stop-color="#22D3EE"/></linearGradient><filter id="cp-glow"><feGaussianBlur stdDeviation="2.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><rect width="512" height="512" rx="96" fill="#050505"/><line x1="0" y1="200" x2="512" y2="200" stroke="#06B6D4" stroke-opacity="0.05" stroke-width="1"/><line x1="0" y1="312" x2="512" y2="312" stroke="#06B6D4" stroke-opacity="0.05" stroke-width="1"/><line x1="160" y1="0" x2="160" y2="512" stroke="#06B6D4" stroke-opacity="0.05" stroke-width="1"/><line x1="352" y1="0" x2="352" y2="512" stroke="#06B6D4" stroke-opacity="0.05" stroke-width="1"/><text x="256" y="282" font-family="'Inter','Helvetica Neue',Arial,sans-serif" font-weight="800" font-size="78" letter-spacing="-4" text-anchor="middle" fill="url(#cp-text-grad)" filter="url(#cp-glow)">Callpath</text><rect x="68" y="295" width="170" height="3" rx="1.5" fill="url(#cp-accent-grad)" opacity="0.9"/><rect x="274" y="295" width="170" height="3" rx="1.5" fill="url(#cp-accent-grad)" opacity="0.9"/><circle cx="256" cy="296.5" r="4" fill="#22D3EE" filter="url(#cp-glow)"/><text x="256" y="338" font-family="'JetBrains Mono','Fira Mono','Courier New',monospace" font-weight="400" font-size="11" letter-spacing="1.5" text-anchor="middle" fill="#06B6D4" opacity="0.75">decoded API · no ABI hunting</text></svg>
+    Callpath
+  </div>
+  <ul>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#roadmap">Roadmap</a></li>
+  </ul>
+  <button class="btn">Get Early Access</button>
+</nav>
+
+<section class="hero">
+  <div>
+    <div class="hero-tag">⬡ Base · REST + WebSocket API · Prototype</div>
+    <h1>Every Base transaction, fully decoded.</h1>
+    <p>Pass any tx hash, block range, or contract address. Get back human-readable function names, typed arguments, internal calls, events, and revert reasons — no ABI hunting, no raw hex parsing.</p>
+    <div class="hero-btns">
+      <button class="btn">Request API Access</button>
+      <button class="btn-ghost">View Docs</button>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="float-badge">LIVE on Base</div>
+    <div class="code-card">
+      <div><span class="c-key">"function"</span><span class="c-obj">: </span><span class="c-str">"swapExactTokensForTokens"</span><span class="c-obj">,</span></div>
+      <div><span class="c-key">"args"</span><span class="c-obj">: {</span></div>
+      <div>&nbsp;&nbsp;<span class="c-key">"amountIn"</span><span class="c-obj">: </span><span class="c-num">1500000000</span><span class="c-obj">,</span></div>
+      <div>&nbsp;&nbsp;<span class="c-key">"amountOutMin"</span><span class="c-obj">: </span><span class="c-num">1483200000</span><span class="c-obj">,</span></div>
+      <div>&nbsp;&nbsp;<span class="c-key">"path"</span><span class="c-obj">: [</span><span class="c-str">"USDC"</span><span class="c-obj">, </span><span class="c-str">"WETH"</span><span class="c-obj">]</span></div>
+      <div><span class="c-obj">},</span></div>
+      <div><span class="c-key">"internal_calls"</span><span class="c-obj">: [</span></div>
+      <div>&nbsp;&nbsp;<span class="c-obj">{ </span><span class="c-key">"fn"</span><span class="c-obj">: </span><span class="c-str">"transferFrom"</span><span class="c-obj">, </span><span class="c-key">"depth"</span><span class="c-obj">: </span><span class="c-num">1</span><span class="c-obj"> }</span></div>
+      <div><span class="c-obj">],</span></div>
+      <div><span class="c-key">"revert"</span><span class="c-obj">: </span><span class="c-str">null</span><span class="c-obj">,</span></div>
+      <div><span class="c-key">"confidence"</span><span class="c-obj">: </span><span class="c-num">1.0</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="problem" id="problem">
+  <div>
+    <div class="section-label">The Problem</div>
+    <h2 style="font-size:2rem;line-height:1.2">Decoding Base transactions is painful by default</h2>
+    <ul class="pain-list">
+      <li>Raw <span class="mono" style="color:var(--acc);font-size:.82rem">debug_traceTransaction</span> output is hex soup — unreadable without an ABI.</li>
+      <li>ABI hunting across Basescan, IPFS, and GitHub takes hours per contract.</li>
+      <li>Unverified contracts return nothing — or crash your decoder entirely.</li>
+      <li>ERC-4337 UserOp bundles collapse multiple ops into one opaque blob.</li>
+      <li>Running an archival node + decoder stack costs thousands per month.</li>
+    </ul>
+  </div>
+  <div>
+    <div class="section-label" style="margin-bottom:.8rem">What you get without Callpath</div>
+    <div class="hex-block">
+      <span>INPUT DATA:</span><br>
+      0x38ed173900000000000000000000000000000000000000000000000000000000591b4b5f000000000000000000000000000000000000000000000000000000005850c0f20000000000000000000000000000000000000000000000000000000000000080000000000000000000000000d3cda913deb6f0967967...
+    </div>
+    <div style="margin-top:1rem;padding:1rem;border-radius:var(--r);background:rgba(6,182,212,.04);border:1px solid rgba(6,182,212,.1);font-size:.82rem;color:var(--muted)">↑ Good luck building a portfolio tracker with that.</div>
+  </div>
+</section>
+
+<section class="features" id="features">
+  <div class="section-label" style="display:inline-block">Capabilities</div>
+  <h2>Everything decoded, nothing assumed</h2>
+  <p>A single API surface covering verified contracts, unknown bytecode, account abstraction, and real-time streaming.</p>
+  <div class="feat-grid">
+    <div class="feat-card card">
+      <div class="feat-icon">🔍</div>
+      <h3>Full Call Tree Decoding</h3>
+      <p>POST a tx hash, receive a structured JSON call tree with every internal call, depth, gas, and return value decoded from Basescan-verified ABIs.</p>
+    </div>
+    <div class="feat-card card">
+      <div class="feat-icon">🧬</div>
+      <h3>Bytecode Fingerprinting</h3>
+      <p>Unverified contracts get partial decoding via 4-byte selector matching. Every field carries a confidence score so you know exactly what to trust.</p>
+    </div>
+    <div class="feat-card card">
+      <div class="feat-icon">📦</div>
+      <h3>ERC-4337 UserOp Unpacking</h3>
+      <p>Bundled UserOps are exploded into individual decoded operations — each with its own gas accounting, decoded calldata, and revert attribution.</p>
+    </div>
+    <div class="feat-card card">
+      <div class="feat-icon">⚡</div>
+      <h3>WebSocket Streaming</h3>
+      <p>Subscribe to any contract address and receive decoded call events in real time via WebSocket — no polling, no archival node required.</p>
+    </div>
+    <div class="feat-card card">
+      <div class="feat-icon">📚</div>
+      <h3>Live ABI Registry</h3>
+      <p>ABIs are auto-indexed from Basescan every block. Community submissions via ERC-7730-compatible JSON pinned to IPFS are indexed within one block confirmation.</p>
+    </div>
+    <div class="feat-card card">
+      <div class="feat-icon">📊</div>
+      <h3>Block-Range Batch Queries</h3>
+      <p>Query up to 1000 blocks in a single request for historical analytics. Ideal for building dashboards, audit trails, and protocol-level reporting.</p>
+    </div>
+  </div>
+</section>
+
+<section class="how" id="how">
+  <div>
+    <div class="section-label">How It Works</div>
+    <h2 style="font-size:2rem;line-height:1.2;margin-bottom:.5rem">From hash to human-readable in milliseconds</h2>
+    <p style="color:var(--muted);font-size:.95rem;margin-bottom:1rem">Callpath runs a live decode pipeline on Base, so you never touch an RPC node or manage ABIs yourself.</p>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div><h3>Submit a tx hash, block range, or contract address</h3><p>REST or WebSocket. Any Base transaction, including contracts that aren't verified on Basescan.</p></div></div>
+      <div class="step"><div class="step-num">2</div><div><h3>ABI registry lookup + bytecode fallback</h3><p>Verified ABI is fetched instantly. For unknown contracts, the 4-byte selector DB provides partial decoding with confidence scores.</p></div></div>
+      <div class="step"><div class="step-num">3</div><div><h3>ERC-4337 unpacking and event correlation</h3><p>UserOp bundles are decomposed. Emitted events are matched to function calls. Revert reasons are decoded to strings.</p></div></div>
+      <div class="step"><div class="step-num">4</div><div><h3>Receive structured JSON — ready to render</h3><p>No post-processing needed. Use it directly in your portfolio tracker, AI agent, or wallet UX layer.</p></div></div>
+    </div>
+  </div>
+  <div class="api-demo">
+    <div class="endpoint-pill"><span class="method">POST</span>/trace</div>
+    <div class="code-card" style="margin-bottom:1rem">
+      <div style="color:var(--muted);font-size:.68rem;margin-bottom:.5rem"># Request</div>
+      <div><span class="c-obj">{</span></div>
+      <div>&nbsp;&nbsp;<span class="c-key">"txHash"</span><span class="c-obj">: </span><span class="c-str">"0xabc...123"</span><span class="c-obj">,</span></div>
+      <div>&nbsp;&nbsp;<span class="c-key">"chain"</span><span class="c-obj">: </span><span class="c-str">"base"</span></div>
+      <div><span class="c-obj">}</span></div>
+    </div>
+    <div class="endpoint-pill"><span class="method" style="background:#a8ff78;color:#050505">GET</span>/traces?from=&amp;to=</div>
+    <div class="code-card">
+      <div style="color:var(--muted);font-size:.68rem;margin-bottom:.5rem"># WebSocket subscription</div>
+      <div><span class="c-obj">{</span></div>
+      <div>&nbsp;&nbsp;<span class="c-key">"subscribe"</span><span class="c-obj">: </span><span class="c-str">"contract"</span><span class="c-obj">,</span></div>
+      <div>&nbsp;&nbsp;<span class="c-key">"address"</span><span class="c-obj">: </span><span class="c-str">"0xUniswapV3..."</span></div>
+      <div><span class="c-obj">}</span></div>
+      <div style="margin-top:.5rem;color:#a8ff78;font-size:.68rem">→ stream of decoded calls, live</div>
+    </div>
+  </div>
+</section>
+
+<section class="roadmap" id="roadmap">
+  <div class="section-label" style="display:block;text-align:center;margin-bottom:.4rem">Roadmap</div>
+  <h2>Built in public on Base</h2>
+  <p>Three milestones from prototype to full public API.</p>
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot done"></div>
+      <div class="tl-q">Q1 2026 <span class="badge-done">COMPLETED</span></div>
+      <h3>Working Prototype — Verified Contract Decoding</h3>
+      <p>POST /trace endpoint live. Basescan ABI indexer polling every block. Validated against Uniswap v3, Aerodrome, and Base Bridge with assertion-based accuracy checks.</p>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot active"></div>
+      <div class="tl-q">Q2 2026 <span class="badge-prog">IN PROGRESS</span></div>
+      <h3>Bytecode Fingerprinting + ERC-4337 + WebSocket</h3>
+      <p>4-byte selector DB integration with per-field confidence scores. UserOp bundle decoder with per-op gas and revert attribution. Real-time WebSocket streaming for contract address subscriptions.</p>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-q">Q3 2026 <span class="badge-up">UPCOMING</span></div>
+      <h3>Public API Launch — Metered Pricing + Community ABIs</h3>
+      <p>API portal with key issuance, usage dashboards, and free/pro/enterprise tiers. Community ERC-7730 JSON submission via IPFS. Block-range batch endpoint covering up to 1000 blocks per request.</p>
+    </div>
+  </div>
+</section>
+
+<section class="cta">
+  <div class="section-label" style="display:inline-block;margin-bottom:1rem">Early Access</div>
+  <h2>Stop wrestling with hex.<br>Start shipping.</h2>
+  <p>Callpath is in active prototype. Join the waitlist and get early API access, usage credits, and a direct line to the team building it.</p>
+  <div class="cta-btns">
+    <button class="btn" style="font-size:1rem;padding:.75rem 2rem">Join the Waitlist</button>
+    <button class="btn-ghost" style="font-size:1rem;padding:.75rem 2rem">Read the Docs</button>
+  </div>
+</section>
+
+<footer>
+  <div class="nav-logo" style="font-size:1rem">
+    <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" style="width:24px;height:24px;border-radius:5px"><defs><linearGradient id="fg" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#E0FCFF"/><stop offset="100%" stop-color="#22D3EE"/></linearGradient></defs><rect width="512" height="512" rx="96" fill="#050505"/><text x="256" y="300" font-family="Arial" font-weight="800" font-size="78" letter-spacing="-4" text-anchor="middle" fill="url(#fg)">Callpath</text></svg>
+    Callpath
+  </div>
+  <p>© 2026 Callpath · Decoded call traces for Base</p>
+  <div class="links">
+    <a href="#">Docs</a>
+    <a href="#">GitHub</a>
+    <a href="#">Twitter</a>
+    <a href="#">Contact</a>
+  </div>
+</footer>
+
+</body>
+</html>
