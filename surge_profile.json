@@ -1,0 +1,125 @@
+{
+  "_meta": {
+    "schema_version": "1.0",
+    "source": "startup_generator",
+    "generated_from": "output/projects/Callpath/profile.json",
+    "notes": "Field names and values match Surge Discovery create form (Full Mode, 9 steps)"
+  },
+  "project_name": "Callpath",
+  "tagline": "Real-time decoded call trace API for every Base transaction — no ABI hunting, no raw hex.",
+  "full_description": "Callpath provides a REST and WebSocket API that accepts any Base transaction hash, block range, or contract address and returns fully decoded call traces with human-readable function names, typed arguments, internal calls, emitted events, and revert reasons. The API is backed by a live ABI registry that auto-indexes verified contracts from Basescan and accepts community-submitted ERC-7730-compatible JSON metadata stored on IPFS. For unverified contracts, Callpath runs a bytecode fingerprint",
+  "category": "AI Agents & Automation",
+  "stage": "Prototype",
+  "logo": {
+    "local_path": "/Users/aliev_murat/Documents/Claude/Projects/SURGE/startup-generator/output/projects/Callpath/logo.svg",
+    "url": "https://github.com/AllievMuro/callpath/raw/main/logo.svg",
+    "format": "svg",
+    "note": "Surge requires PNG or JPG. Convert SVG → PNG before upload."
+  },
+  "ai_tools": [
+    "Cursor",
+    "Claude Code",
+    "GitHub Copilot"
+  ],
+  "tech_stack": {
+    "languages": [],
+    "dev_tools": [
+      "Node.js",
+      "Fastify",
+      "Base RPC (debug_traceTransaction, eth_getLogs)",
+      "Redis Streams",
+      "WebSocket (ws library)",
+      "ERC-7730 JSON metadata standard",
+      "4-byte selector database",
+      "ERC-4337 UserOp ABI decoder",
+      "Basescan API (verified ABI indexer)",
+      "IPFS (community ABI submissions)",
+      "PostgreSQL (ABI registry persistence)",
+      "Docker / Fly.io"
+    ]
+  },
+  "pitch_deck": {
+    "local_path": "/Users/aliev_murat/Documents/Claude/Projects/SURGE/startup-generator/output/projects/Callpath/pitch_deck.pptx",
+    "url": "https://github.com/AllievMuro/callpath/raw/main/pitch_deck.pptx",
+    "format": "pptx",
+    "note": "Surge requires PDF. Convert PPTX → PDF before upload."
+  },
+  "whitepaper": {
+    "local_path": "",
+    "url": ""
+  },
+  "pitch_video": {
+    "url": "",
+    "source": "youtube",
+    "note": "Must be public/unlisted YouTube URL. Max 800 seconds."
+  },
+  "links": {
+    "website": "https://AllievMuro.github.io/callpath",
+    "github": "https://github.com/AllievMuro/callpath",
+    "telegram": "",
+    "x_twitter": ""
+  },
+  "team_description": "The founding team has backgrounds in EVM tooling and backend infrastructure, with prior experience building indexing pipelines for on-chain analytics platforms and contributing to open-source ABI decoding libraries. They have shipped production-grade RPC middleware used by wallet teams on Ethereum mainnet.",
+  "team_members": [],
+  "roadmap": [
+    {
+      "quarter": "Q1 2026",
+      "status": "Completed",
+      "goal": "Ship a working prototype that decodes verified-contract transactions on Base via REST endpoint.",
+      "deliverables": [
+        "POST /trace endpoint accepting a Base tx hash and returning a typed call tree for Basescan-verified contracts",
+        "Basescan ABI indexer that polls verified contracts every block and persists ABIs to PostgreSQL",
+        "Internal testbed covering 10 high-volume Base protocols (Uniswap v3, Aerodrome, Base Bridge) with assertion-based decode accuracy checks"
+      ]
+    },
+    {
+      "quarter": "Q2 2026",
+      "status": "In Progress",
+      "goal": "Add bytecode fingerprint decoding, ERC-4337 UserOp unpacking, and WebSocket streaming for public developer access.",
+      "deliverables": [
+        "Bytecode fingerprint matcher integrated with 4-byte selector DB, returning per-field confidence scores for unverified contracts",
+        "ERC-4337 UserOp bundle decoder that explodes bundled operations into individual decoded calls with per-op gas and revert attribution",
+        "WebSocket subscription endpoint allowing developers to stream decoded call events for any contract address in real time"
+      ]
+    },
+    {
+      "quarter": "Q3 2026",
+      "status": "Upcoming",
+      "goal": "Launch public API with metered pricing, community ABI submission pipeline, and ERC-7730 on-chain metadata support.",
+      "deliverables": [
+        "Public API portal with API key issuance, usage dashboards, and tiered rate limits (free / pro / enterprise)",
+        "Community ABI submission flow accepting ERC-7730-compatible JSON metadata pinned to IPFS and indexed within one block confirmation",
+        "Block-range batch endpoint (GET /traces?from=&to=) enabling historical analytics queries across up to 1000 blocks per request"
+      ]
+    }
+  ],
+  "revenue_sources": {
+    "stripe": null,
+    "paypal": null,
+    "shopify": null
+  },
+  "user_data": {
+    "google_analytics": null,
+    "mixpanel": null
+  },
+  "publish_readiness": {
+    "required": {
+      "logo": true,
+      "project_name": true,
+      "tagline": true,
+      "category": true,
+      "full_description": true,
+      "team": true,
+      "pitch_deck": true,
+      "pitch_video": false
+    },
+    "optional": {
+      "tech_stack": true,
+      "roadmap": true,
+      "socials": true,
+      "revenue_sources": false,
+      "user_data": false
+    },
+    "summary": "Required: 7/8, Optional: 3/5"
+  }
+}
